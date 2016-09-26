@@ -4,6 +4,7 @@ public class RunBothEncodedMotors
 { 
 	public static void main(String[] args) 
 	{ 
+		//To run both motors and move forward, use the RunBothMotors.java command from the website (Shocker, a true shocker)
 		RXTXRobot r = new ArduinoNano(); // Create RXTXRobot object 
 		r.setPort("COM2"); // Set port to COM2 
 		r.connect(); 
