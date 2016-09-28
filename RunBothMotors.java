@@ -1,16 +1,17 @@
 import rxtxrobot.*; 
  
-public class RunBothEncodedMotors 
+public class RunBothMotors 
 { 
 	public static void main(String[] args) 
 	{ 
-		//To run both motors and move forward, use the RunBothMotors.java command from the website (Shocker, a true shocker)
 		RXTXRobot r = new ArduinoNano(); // Create RXTXRobot object 
 		r.setPort("COM2"); // Set port to COM2 
 		r.connect(); 
-		//We don't have to attach anything because these motors are 
-		//attached by default 
-		r.runEncodedMotor(RXTXRobot.MOTOR1, 255, 100, RXTXRobot.MOTOR2, 255, 100); // Run both motors forward, one for 100,000 ticks and one for 100,000 ticks. 
+		r.runMotor(RXTXRobot.MOTOR1, 500, RXTXRobot.MOTOR2, 500, 0); // Run both motors forward indefinitely 
+		r.sleep(5000); // Pause execution for 5 seconds, but the motors keep running. 
+		r.runMotor(RXTXRobot.MOTOR1,0,RXTXRobot.MOTOR2,0,0); // Stop both motors 
 		r.close(); 
 	} 
 } 
+ 
+
