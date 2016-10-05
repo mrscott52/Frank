@@ -1,0 +1,38 @@
+import rxtxrobot.ArduinoUno;
+import rxtxrobot.RXTXRobot;
+
+public class Bump_Sensor {
+	public static int getBumpSensor(RXTXRobot r)
+	{
+		r.refreshAnalogPins();
+		int reading = r.getAnalogPin(1).getValue();
+		
+		return reading;
+	}
+	
+	public static void main(String[] args)
+	{
+		RXTXRobot r = new ArduinoUno();
+		r.setPort("COM3"); // Set port to COM2
+		r.connect();
+		r.attachMotor(RXTXRobot.MOTOR1, 5);
+		r.attachMotor(RXTXRobot.MOTOR2, 6);
+		int bumpsensor = getBumpSensor(r);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -290, 0); // Run both motors forward indefinitely
+		do
+		{
+			r.refreshAnalogPins();
+			if(r.getAnalogPin(1).getValue() == 0) {
+				r.runMotor(RXTXRobot.MOTOR1, 0 , RXTXRobot.MOTOR2, 0, 0);
+			}
+		}
+		while(r.getAnalogPin(1).getValue() > 500);{
+			r.close();
+		}
+
+		
+		/*while(bumpsensor != 0)
+			r.runMotor(RXTXRobot.MOTOR1,0,RXTXRobot.MOTOR2,0,0);*/
+	}
+
+}
