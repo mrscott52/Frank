@@ -17,7 +17,6 @@ public class Bump_Sensor {
 		r.connect();
 		r.attachMotor(RXTXRobot.MOTOR1, 5);
 		r.attachMotor(RXTXRobot.MOTOR2, 6);
-		int bumpsensor = getBumpSensor(r);
 		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -290, 0); // Run both motors forward indefinitely
 		do
 		{
