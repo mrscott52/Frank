@@ -1,0 +1,64 @@
+import rxtxrobot.ArduinoUno;
+import rxtxrobot.RXTXRobot;
+import rxtxrobot.*;
+
+public class NavigationDemo
+{
+	public static RXTXRobot r;
+	
+	public static void main(String[] args)
+	{
+		RXTXRobot r = new ArduinoNano();
+		r.setPort("COM3"); // Set port to COM2 
+		r.connect();
+		r.attachMotor(RXTXRobot.MOTOR1, 5);
+		r.attachMotor(RXTXRobot.MOTOR2, 6);
+		//Go forward until the robot is less than 50cm from the wall
+		int distance = 10000000;
+		while(distance > 50)
+		{
+			//Read the ping sensor value, which is connected to pin 11
+			int measurement = getPing();
+			distance = measurement;//reset "distance" to new distance from the wall
+			r.sleep(300);
+			MoveForward(300, 300, 1000);//move forward for 1 second
+		}
+		//Turn Right:
+		MoveForward(0, 300, 2520);
+		//check and see if there's anything in front of it
+		distance = getPing();
+		if (distance >= 30)//if there's nothing there, it needs to turn 180 degrees
+		{
+			MoveForward(0, 300, 5040);
+		}else//if there's something there (the ramp), it needs to move forward 
+		{
+			MoveForward(300, 300, 5000);//move forward 5 seconds
+		}
+		r.close();
+	}
+	
+	public static void MoveForward(int rightMotorSpeed, int leftMotorSpeed, int milliseconds)
+	{
+		r.runMotor(RXTXRobot.MOTOR1, -rightMotorSpeed, RXTXRobot.MOTOR2, leftMotorSpeed, 0); // Run both motors forward indefinitely 
+		r.sleep(milliseconds); // Pause execution, but the motors keep running. 
+		r.runMotor(RXTXRobot.MOTOR1,0,RXTXRobot.MOTOR2,0,0); // Stop both motors 
+		r.close(); 
+	}
+
+	public static int getPing()
+	{
+		int PING_PIN = 13;
+		RXTXRobot r = new ArduinoUno(); // Create RXTXRobot object
+		r.connect();
+		int distance = 0;
+		for (int x=0; x < 5; ++x)
+		{
+			//Read the ping sensor value, which is connected to pin 11
+			System.out.println("Response: " + r.getPing(PING_PIN) + " cm");
+			r.sleep(300);
+			distance = r.getPing(PING_PIN);
+		}
+		r.close();
+		return distance;
+	}
+}
