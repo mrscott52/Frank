@@ -1,5 +1,5 @@
-import rxtxrobot.ArduinoUno;
 import rxtxrobot.RXTXRobot;
+
 import rxtxrobot.*;
 
 public class NavigationDemo
@@ -27,7 +27,7 @@ public class NavigationDemo
 		MoveForward(0, 300, 2520);
 		//check and see if there's anything in front of it
 		distance = getPing();
-		if (distance >= 30)//if there's nothing there, it needs to turn 180 degrees
+		if (distance == -1)//if there's nothing there, it needs to turn 180 degrees
 		{
 			MoveForward(0, 300, 5040);
 		}else//if there's something there (the ramp), it needs to move forward 
@@ -42,14 +42,11 @@ public class NavigationDemo
 		r.runMotor(RXTXRobot.MOTOR1, -rightMotorSpeed, RXTXRobot.MOTOR2, leftMotorSpeed, 0); // Run both motors forward indefinitely 
 		r.sleep(milliseconds); // Pause execution, but the motors keep running. 
 		r.runMotor(RXTXRobot.MOTOR1,0,RXTXRobot.MOTOR2,0,0); // Stop both motors 
-		r.close(); 
 	}
 
 	public static int getPing()
 	{
 		int PING_PIN = 13;
-		RXTXRobot r = new ArduinoUno(); // Create RXTXRobot object
-		r.connect();
 		int distance = 0;
 		for (int x=0; x < 5; ++x)
 		{
@@ -58,7 +55,6 @@ public class NavigationDemo
 			r.sleep(300);
 			distance = r.getPing(PING_PIN);
 		}
-		r.close();
 		return distance;
 	}
 }
