@@ -1,0 +1,156 @@
+IMPORTANT: DOESN'T WORK
+import rxtxrobot.RXTXRobot;
+import rxtxrobot.ArduinoNano;;
+
+public class AndrewNavAttempt3 
+{
+	public static RXTXRobot r;
+	
+	public static void main(String[] args)
+	{
+		r = new ArduinoNano();
+		r.setPort("COM3");
+		r.connect();
+		r.attachMotor(RXTXRobot.MOTOR1, 6);
+		r.attachMotor(RXTXRobot.MOTOR2, 5);
+		startingBox();
+		baseofHill();
+		topofHill();
+	}	
+	
+	public static void startingBox()
+	{
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 0500);
+		int dist = 0; 
+		while (dist >= 30)
+		{
+			r.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 120)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 0750); // Run both motors forward indefinitely 
+			}else if (dist <= 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 300, 1000);
+			}else if (dist <= 120 && dist >= 95)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 0300);
+			}else if (dist <= 95 && dist >= 30)
+			{
+				firstTurn();
+			}
+		}
+	}
+	public static int getPing()
+	{
+		int PING_PIN = 13;
+		int dist1 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist2 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist3 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist4 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist5 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist = (dist1 + dist2 + dist3 + dist4 + dist5)/5;
+		System.out.println("Response: " + r.getPing(PING_PIN));
+		return dist;
+	}
+	
+	public static void firstTurn()
+	{
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 300, 1500);
+		int dist = getPing();
+		if (dist >= 125 && dist <= 185)
+		{
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 4000);
+		}else
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 300, 0);
+			r.sleep(3000);
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 1500);
+	}
+	
+	public static void baseofHill()
+	{
+		int dist;
+		do 
+		{
+			dist = getPing();
+			if (dist >= 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 400);
+			}else
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 200);
+			}
+		}while (dist >= 5);
+	}
+	public static void topofHill()
+	{
+		moveServoUp();
+		getThermistorReading();
+		getThermistorReading2();
+		getWindSpeed();
+		displayTempAndWind();
+		r.sleep(1300);
+		r.moveServo(RXTXRobot.SERVO1,1);
+	}
+	
+	public static int getThermistorReading()
+	{
+		int sum = 0;
+		int readingCount = 10;
+		{
+			for (int i = 0; i < readingCount; i++)
+			{
+				r.refreshAnalogPins();
+				int reading = r.getAnalogPin(0).getValue();
+				sum += reading;
+			}
+		}
+		return sum / readingCount;
+	}
+	
+	public static int getThermistorReading2()
+	{
+		int sum = 0;
+		int readingCount2 = 10;
+		{
+			for (int i = 0; i < readingCount2; i++)
+			{
+				r.refreshAnalogPins();
+				int reading = r.getAnalogPin(2).getValue();
+				sum += reading;
+			}
+		}
+		return sum / readingCount2;
+	}
+	public static double getWindSpeed()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		return (13.12 - thermistorReading + 0.6215 * thermistorReading2) / (11.37 - 0.3695 * thermistorReading2);
+	}
+	
+	public static void displayTempAndWind()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		double windSpeed = getWindSpeed();
+		
+		System.out.println("The open probe reads the value: " + thermistorReading);
+		System.out.println("In volts: " + (thermistorReading * (5.0/1023.0)));
+		System.out.println("The closed probe reads the value: " + thermistorReading2);
+		System.out.println("In volts: " + (thermistorReading2 * (5.0/1023.0)));
+		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 703.1832)/-5.62876);
+		System.out.printf("The wind speed is %s kilometers per hour.",windSpeed);
+	}
+
+	public static void moveServoUp()
+	{
+		r.attachServo(RXTXRobot.SERVO1, 4); //Connect the servos to the Arduino 
+		r.moveServo(RXTXRobot.SERVO1,0); // Move Servo 1 to location 30
+	}
+}
