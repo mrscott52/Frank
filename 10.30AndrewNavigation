@@ -1,7 +1,6 @@
-import rxtxrobot.*;
-import rxtxrobot.ArduinoUno;
-import rxtxrobot.ArduinoNano;
+//IMPORTANT: DOESN'T WORK
 import rxtxrobot.RXTXRobot;
+import rxtxrobot.ArduinoNano;;
 
 public class AndrewNavigation 
 {
@@ -10,53 +9,148 @@ public class AndrewNavigation
 	public static void main(String[] args)
 	{
 		r = new ArduinoNano();
-		r.setPort("COM3");
+		r.setPort("COM5");
 		r.connect();
 		r.attachMotor(RXTXRobot.MOTOR1, 5);
 		r.attachMotor(RXTXRobot.MOTOR2, 6);
-		int distance = 100000;
-		while (distance >= 20)
+		startingBox();
+		baseofHill();
+		topofHill();
+	}	
+	
+	public static void startingBox()
+	{
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 300, 0500);
+		int dist = 200; 
+		while (dist >= 30)
 		{
-			distance = getPing();
-			if (distance >= 115)
+			r.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 120)
 			{
-				moveMotor(500,500,0500);
-			}else if (distance >= 30 && distance <= 115)
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 300, 0750); // Run both motors forward indefinitely 
+			}else if (dist < 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 1000);
+			}else if (dist < 120 && dist > 95)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 0300);
+			}else if (dist <= 95 && dist >= 30)
 			{
 				firstTurn();
-			}else if (distance <= 30)
-			{
-				moveMotor(250,250,1000);
 			}
 		}
 	}
-	
 	public static int getPing()
 	{
-		int PING_PIN = 13;
-		int distance = r.getPing(PING_PIN);
-		System.out.println("Response: " + r.getPing(PING_PIN) + " cm");
-		return distance;
-	}
-	
-	public static void moveMotor(int leftMotor, int rightMotor, int time)
-	{
-		r.runMotor(RXTXRobot.MOTOR1, leftMotor, RXTXRobot.MOTOR2, -rightMotor, 0); // Run both motors forward indefinitely 
-		r.sleep(time); // Pause execution, but the motors keep running. 
-		r.runMotor(RXTXRobot.MOTOR1,0,RXTXRobot.MOTOR2,0,0); // Stop both motors 
+		int PING_PIN = 11;
+		int dist1 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist2 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist3 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist4 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist5 = r.getPing(PING_PIN);
+		r.refreshDigitalPins();
+		int dist = (dist1 + dist2 + dist3 + dist4 + dist5)/5;
+		System.out.println("Response: " + r.getPing(PING_PIN));
+		return dist;
 	}
 	
 	public static void firstTurn()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 0, 2520);
-		int distance = getPing();
-		if (distance == -1)
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 300, 1500);
+		int dist = getPing();
+		if (dist >= 125 && dist <= 185)
 		{
-			r.runMotor(RXTXRobot.MOTOR1, 0,  RXTXRobot.MOTOR2, 300, 5040);
-			r.runMotor(RXTXRobot.MOTOR1,500,RXTXRobot.MOTOR2,500,3000);
-		}else if (distance >= 112 && distance <= 190)
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 4000);
+		}else
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 300, 0);
+			r.sleep(3000);
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 1500);
+	}
+	
+	public static void baseofHill()
+	{
+		int dist;
+		do 
 		{
-			r.runMotor(RXTXRobot.MOTOR1, 500, RXTXRobot.MOTOR2, 500, 3000);
+			dist = getPing();
+			if (dist >= 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 400);
+			}else
+			{
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -300, 200);
+			}
+		}while (dist >= 5);
+	}
+	public static void topofHill()
+	{
+		moveServoUp();
+		getThermistorReading();
+		getThermistorReading2();
+		getWindSpeed();
+		displayTempAndWind();
+		r.sleep(1300);
+		r.moveServo(RXTXRobot.SERVO1,1);
+	}
+	
+	public static int getThermistorReading()
+	{
+		int sum = 0;
+		int readingCount = 10;
+		{
+			for (int i = 0; i < readingCount; i++)
+			{
+				r.refreshAnalogPins();
+				int reading = r.getAnalogPin(0).getValue();
+				sum += reading;
+			}
 		}
+		return sum / readingCount;
+	}
+	
+	public static int getThermistorReading2()
+	{
+		int sum = 0;
+		int readingCount2 = 10;
+		{
+			for (int i = 0; i < readingCount2; i++)
+			{
+				r.refreshAnalogPins();
+				int reading = r.getAnalogPin(2).getValue();
+				sum += reading;
+			}
+		}
+		return sum / readingCount2;
+	}
+	public static double getWindSpeed()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		return (13.12 - thermistorReading + 0.6215 * thermistorReading2) / (11.37 - 0.3695 * thermistorReading2);
+	}
+	
+	public static void displayTempAndWind()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		double windSpeed = getWindSpeed();
+		
+		System.out.println("The open probe reads the value: " + thermistorReading);
+		System.out.println("In volts: " + (thermistorReading * (5.0/1023.0)));
+		System.out.println("The closed probe reads the value: " + thermistorReading2);
+		System.out.println("In volts: " + (thermistorReading2 * (5.0/1023.0)));
+		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 703.1832)/-5.62876);
+		System.out.printf("The wind speed is %s kilometers per hour.",windSpeed);
+	}
+
+	public static void moveServoUp()
+	{
+		r.attachServo(RXTXRobot.SERVO1, 4); //Connect the servos to the Arduino 
+		r.moveServo(RXTXRobot.SERVO1,0); // Move Servo 1 to location 30
 	}
 }
