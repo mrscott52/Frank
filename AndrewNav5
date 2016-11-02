@@ -22,6 +22,7 @@ public class NavigationV5
 		middleAreaTurn();
 		pongToBridgeFirstWall();
 		pongToBridgeSecondWall();
+		crossBridge();
 		toSandPit();
 		sandPitServo();
 		r.sleep(15000);
@@ -143,7 +144,7 @@ public class NavigationV5
 		System.out.println("In volts: " + (thermistorReading * (5.0/1023.0)));
 		System.out.println("The closed probe reads the value: " + thermistorReading2);
 		System.out.println("In volts: " + (thermistorReading2 * (5.0/1023.0)));
-		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 703.1832)/-5.62876);
+		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 699.4296)/-5.89856);
 		System.out.printf("The wind speed is %s kilometers per hour.",windSpeed);
 	}
 
@@ -176,14 +177,14 @@ public class NavigationV5
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
 		int dist = 200;
 		int totalTime = 0;
-		while (dist < 18 && dist >= 35)
+		while (dist < 18 || dist >= 35)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
 			if (dist >= 35)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0500);
-				totalTime += 0500;
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0250);
+				totalTime += 0250;
 			}else if (dist < 18)
 			{
 				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 0250);
@@ -198,11 +199,29 @@ public class NavigationV5
 	
 	public static void avoidObstacles(int totalTime)
 	{
-		int timeLeft = 4500 - totalTime;
 		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 320, 1200);
+		r.sleep(300);
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000);
+		r.sleep(300);
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
-		r.runMotor(RXTXRobot.MOTOR1, -320, RXTXRobot.MOTOR2, 320, timeLeft);
+		r.sleep(300);
+		int dist = 100;
+		while (dist > 20)
+		{
+			r.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 40)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
+			}else if (dist >= 30 && dist < 40)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 400);
+			}else if (dist >= 15 && dist < 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 250);
+			}
+		}
+		r.sleep(300);
 	}
 	public static void middleAreaTurn()
 	{
@@ -228,14 +247,15 @@ public class NavigationV5
 		{
 			System.out.println("The robot should be hitting the wall");
 		}
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 500);
 	}
-	
 	public static void pongToBridgeFirstWall()
 	{
+		System.out.println("This is the pongToBridgeFirstWall method (for debugging)");
 		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 1500);
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1200);
 		int dist = 300;
-		while (dist >= 20)
+		while (dist >= 30)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
@@ -245,7 +265,7 @@ public class NavigationV5
 			}else if (dist < 70 && dist >= 50)
 			{
 				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000);
-			}else if (dist < 50 && dist >= 20)
+			}else if (dist < 50 && dist >= 30)
 			{
 				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0500);
 			}
@@ -254,6 +274,7 @@ public class NavigationV5
 	
 	public static void pongToBridgeSecondWall()
 	{
+		System.out.println("This is the pongToBridgeSecondWall method (for debugging)");
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
 		int dist = 300;
 		while (dist < 10 || dist > 20)
@@ -276,13 +297,15 @@ public class NavigationV5
 	
 	public static void crossBridge()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 10000);
+		System.out.println("This is the crossBridge method");
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 7000);
 	}
 	
 	public static void toSandPit()
 	{
+		System.out.println("This is the toSandPit method");
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 6000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 4000);
 		int dist = 200;
 		while (dist > 5)
 		{
