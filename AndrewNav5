@@ -168,13 +168,12 @@ public class NavigationV5
 	public static void downTheRamp()
 	{
 		System.out.println("Now we are going to go down the ramp.");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 4000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2500);
 		System.out.println("You should now be at the bottom of the ramp.");
 	}
 	
 	public static void theFarWall()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
 		int dist = 200;
 		int totalTime = 0;
 		while (dist < 18 || dist >= 35)
@@ -183,11 +182,11 @@ public class NavigationV5
 			dist = getPing();
 			if (dist >= 35)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0250);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 500);
 				totalTime += 0250;
 			}else if (dist < 18)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 0250);
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 500);
 				totalTime += -250;
 			}else if (dist >= 18 && dist < 35)
 			{
@@ -206,7 +205,7 @@ public class NavigationV5
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
 		r.sleep(300);
 		int dist = 100;
-		while (dist > 20)
+		while (dist > 35)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
@@ -215,7 +214,7 @@ public class NavigationV5
 				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
 			}else if (dist >= 30 && dist < 40)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 400);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
 			}else if (dist >= 15 && dist < 30)
 			{
 				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 250);
@@ -227,25 +226,30 @@ public class NavigationV5
 	{
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
 		System.out.println("The robot should now be facing the ping pong ball dispenser");
-		int dist = getPing();
-		if (dist >= 70 && dist < 100)
+		int dist = 10;
+		while (dist >= 27)
 		{
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 3500);
-		}else if (dist >= 100)
-		{
-			System.out.println("The wall is far from the robot. ");
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 4500);
-		}else if (dist < 70 && dist >= 40)
-		{
-			System.out.println("The wall is somewhat close to the robot.");
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2500);
-		}else if (dist < 40 && dist >= 5)
-		{
-			System.out.println("The wall is very close to the robot.");
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000);
-		}else if (dist < 5)
-		{
-			System.out.println("The robot should be hitting the wall");
+			r.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 70 && dist < 100)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2500);
+			}else if (dist >= 100)
+			{
+				System.out.println("The wall is far from the robot. ");
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 3500);
+			}else if (dist < 70 && dist >= 40)
+			{
+				System.out.println("The wall is somewhat close to the robot.");
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1500);
+			}else if (dist < 40 && dist >= 20)
+			{
+				System.out.println("The wall is very close to the robot.");
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
+			}else if (dist < 5)
+			{
+				System.out.println("The robot should be hitting the wall");
+			}
 		}
 		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 500);
 	}
@@ -335,7 +339,7 @@ public class NavigationV5
 		if (Vtotal >= 20)
 		{
 			pingPongServo();
-		}	
+		}
 	}
 	public static int conductivity()
 	{
