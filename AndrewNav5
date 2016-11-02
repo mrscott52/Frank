@@ -1,3 +1,5 @@
+//BUMP SENSOR is on ANALOG 4
+
 import rxtxrobot.RXTXRobot;
 import rxtxrobot.ArduinoNano;;
 
@@ -20,6 +22,12 @@ public class NavigationV5
 		middleAreaTurn();
 		pongToBridgeFirstWall();
 		pongToBridgeSecondWall();
+		toSandPit();
+		sandPitServo();
+		r.sleep(15000);
+		r.close();
+		r.sleep(120000);
+		System.out.println("Fuck this class");
 	}	
 	
 	public static void startingBox()
@@ -52,11 +60,7 @@ public class NavigationV5
 		r.refreshDigitalPins();
 		int dist3 = r.getPing(PING_PIN);
 		r.refreshDigitalPins();
-		int dist4 = r.getPing(PING_PIN);
-		r.refreshDigitalPins();
-		int dist5 = r.getPing(PING_PIN);
-		r.refreshDigitalPins();
-		int dist = (dist1 + dist2 + dist3 + dist4 + dist5)/5;
+		int dist = (dist1 + dist2 + dist3)/3;
 		System.out.println("Response: " + r.getPing(PING_PIN));
 		return dist;
 	}
@@ -88,12 +92,9 @@ public class NavigationV5
 		System.out.println("You should now be at the top of the hill.");
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -310, 1200);
 		moveServoUp();
-		getThermistorReading();
-		getThermistorReading2();
-		getWindSpeed();
 		displayTempAndWind();
 		r.sleep(1300);
-		r.moveServo(RXTXRobot.SERVO1,1);
+		r.moveServo(RXTXRobot.SERVO3,1);
 	}
 	
 	public static int getThermistorReading()
@@ -150,8 +151,8 @@ public class NavigationV5
 	{
 		r.attachServo(RXTXRobot.SERVO3, 7); //Connect the servos to the Arduino
 		System.out.println("The first turn is now over. Now doing the second turn.");
-		r.moveServo(RXTXRobot.SERVO3,90);
-		System.out.println("The servo should currently be halfway.");
+		r.moveServo(RXTXRobot.SERVO3,1);
+		System.out.println("The servo should currently be up.");
 		r.sleep(2000);
 	}
 	public static void moveServoDown()
@@ -277,4 +278,61 @@ public class NavigationV5
 	{
 		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 10000);
 	}
-}                 
+	
+	public static void toSandPit()
+	{
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 6000);
+		int dist = 200;
+		while (dist > 5)
+		{
+			r.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 50)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 3000);
+			}else if (dist < 50 && dist >= 30)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
+			}else if (dist < 30 && dist >= 15)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1500);
+			}else if (dist < 15 && dist >= 5)
+			{
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0750);
+			}
+		}
+	}
+	
+	public static void sandPitServo()
+	{
+		r.attachServo(RXTXRobot.SERVO2, 8);
+		r.moveServo(RXTXRobot.SERVO2, 1);
+		int Vtotal = conductivity();
+		if (Vtotal >= 20)
+		{
+			pingPongServo();
+		}	
+	}
+	public static int conductivity()
+	{
+		r.refreshAnalogPins(); // Cache the Analog pin information
+		int tempTotal = 0;
+		int x = 0;
+		for (x=0; x < 3; ++x) 
+		{
+			int temp = r.getConductivity();
+			System.out.println("Sensor " + x + " has value: " + temp); 
+			tempTotal += temp;
+		} 
+		int Vtotal = tempTotal / x;
+		System.out.println("Average Voltage: " + Vtotal);
+		return Vtotal;
+    } 
+	
+	public static void pingPongServo()
+	{
+		r.attachServo(RXTXRobot.SERVO1, 9);
+		r.moveServo(RXTXRobot.SERVO1, 1);
+	}
+}
