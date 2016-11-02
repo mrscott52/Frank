@@ -33,7 +33,7 @@ public class NavigationV5
 	
 	public static void startingBox()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2000);
 		int dist = 200; 
 		while (dist < 30 || dist > 55)
 		{
@@ -41,13 +41,13 @@ public class NavigationV5
 			dist = getPing();
 			if (dist >= 120)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000); // Run both motors forward indefinitely 
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 1000); // Run both motors forward indefinitely 
 			}else if (dist < 30)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 1000);
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -370, 1000);
 			}else if (dist < 120 && dist > 55)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0750);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 0750);
 			}
 				
 		}
@@ -68,34 +68,34 @@ public class NavigationV5
 	
 	public static void firstTurn()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 370, 1200);
 		int dist = getPing();
 		if (dist >= 125 && dist <= 185)
 		{
 			System.out.println("Robot sees the ramp, going towards the ramp now.");
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 8000);
+			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 8250);
 			System.out.println("Robot sees the ramp, going towards the ramp now.");
 		}else if (dist >= 185)
 		{
 			System.out.println("Robot doesn't see the ramp, turning around now.");
-			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 320, 0);
+			r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 370, 0);
 			r.sleep(2400);
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 7750);
+			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 8250);
 		}else if (dist <= 125)
 		{
 			System.out.println("The ramp is closer than anticipated.");
-			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 9250);
+			r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 9250);
 		}
 	}
 		
 	public static void topofHill()
 	{
 		System.out.println("You should now be at the top of the hill.");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -310, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 1200);
 		moveServoUp();
 		displayTempAndWind();
 		r.sleep(1300);
-		r.moveServo(RXTXRobot.SERVO3,1);
+		r.moveServo(RXTXRobot.SERVO3,179);
 	}
 	
 	public static int getThermistorReading()
@@ -144,7 +144,7 @@ public class NavigationV5
 		System.out.println("In volts: " + (thermistorReading * (5.0/1023.0)));
 		System.out.println("The closed probe reads the value: " + thermistorReading2);
 		System.out.println("In volts: " + (thermistorReading2 * (5.0/1023.0)));
-		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 699.4296)/-5.89856);
+		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 739.4296)/-5.89856);
 		System.out.printf("The wind speed is %s kilometers per hour.",windSpeed);
 	}
 
@@ -168,7 +168,7 @@ public class NavigationV5
 	public static void downTheRamp()
 	{
 		System.out.println("Now we are going to go down the ramp.");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2500);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 3700);
 		System.out.println("You should now be at the bottom of the ramp.");
 	}
 	
@@ -182,11 +182,11 @@ public class NavigationV5
 			dist = getPing();
 			if (dist >= 35)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 500);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 600);
 				totalTime += 0250;
 			}else if (dist < 18)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 500);
+				r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -370, 600);
 				totalTime += -250;
 			}else if (dist >= 18 && dist < 35)
 			{
@@ -198,11 +198,11 @@ public class NavigationV5
 	
 	public static void avoidObstacles(int totalTime)
 	{
-		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 370, 1200);
 		r.sleep(300);
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2000);
 		r.sleep(300);
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 1200);
 		r.sleep(300);
 		int dist = 100;
 		while (dist > 35)
@@ -211,67 +211,69 @@ public class NavigationV5
 			dist = getPing();
 			if (dist >= 40)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 750);
 			}else if (dist >= 30 && dist < 40)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 400);
 			}else if (dist >= 15 && dist < 30)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 250);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 250);
 			}
 		}
 		r.sleep(300);
 	}
 	public static void middleAreaTurn()
 	{
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 1200);
 		System.out.println("The robot should now be facing the ping pong ball dispenser");
-		int dist = 10;
-		while (dist >= 27)
+		int dist = 30;
+		while (dist >= 11)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
 			if (dist >= 70 && dist < 100)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2500);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2500);
 			}else if (dist >= 100)
 			{
 				System.out.println("The wall is far from the robot. ");
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 3500);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 3700);
 			}else if (dist < 70 && dist >= 40)
 			{
 				System.out.println("The wall is somewhat close to the robot.");
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1500);
-			}else if (dist < 40 && dist >= 20)
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 1500);
+			}else if (dist < 40 && dist >= 11)
 			{
 				System.out.println("The wall is very close to the robot.");
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 750);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 750);
 			}else if (dist < 5)
 			{
 				System.out.println("The robot should be hitting the wall");
 			}
 		}
-		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 500);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -370, 500);
+		r.sleep(4000);
+		System.out.println("You should now have the ping pong ball.");
 	}
 	public static void pongToBridgeFirstWall()
 	{
 		System.out.println("This is the pongToBridgeFirstWall method (for debugging)");
-		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -320, 1500);
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -370, 600);
+		r.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 370, 1200);
 		int dist = 300;
-		while (dist >= 30)
+		while (dist >= 20)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
 			if (dist >= 70)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
-			}else if (dist < 70 && dist >= 50)
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2000);
+			}else if (dist < 70 && dist >= 40)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1000);
-			}else if (dist < 50 && dist >= 30)
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 1000);
+			}else if (dist < 40 && dist >= 20)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0500);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 750);
 			}
 		}	
 	}
@@ -279,37 +281,37 @@ public class NavigationV5
 	public static void pongToBridgeSecondWall()
 	{
 		System.out.println("This is the pongToBridgeSecondWall method (for debugging)");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 1200);
 		int dist = 300;
-		while (dist < 10 || dist > 20)
+		while (dist < 10 || dist > 15)
 		{
 			r.refreshDigitalPins();
 			dist = getPing();
 			if (dist >= 60)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -320, RXTXRobot.MOTOR2, 300, 1500);
-			}else if (dist < 60 && dist >= 20)
+				r.runMotor(RXTXRobot.MOTOR1, -370, RXTXRobot.MOTOR2, 300, 1000);
+			}else if (dist < 60 && dist >= 15)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -320, RXTXRobot.MOTOR2, 300, 0500);
+				r.runMotor(RXTXRobot.MOTOR1, -370, RXTXRobot.MOTOR2, 300, 0500);
 			}else if (dist < 10)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, 320, RXTXRobot.MOTOR2, -300, 0500);
+				r.runMotor(RXTXRobot.MOTOR1, 370, RXTXRobot.MOTOR2, -300, 0500);
 			}
 		}
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1200);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 1200);
 	}
 	
 	public static void crossBridge()
 	{
 		System.out.println("This is the crossBridge method");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 7000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 7000);
 	}
 	
 	public static void toSandPit()
 	{
 		System.out.println("This is the toSandPit method");
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
-		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -320, 4000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2000);
+		r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -370, 4000);
 		int dist = 200;
 		while (dist > 5)
 		{
@@ -317,16 +319,16 @@ public class NavigationV5
 			dist = getPing();
 			if (dist >= 50)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 3000);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 3000);
 			}else if (dist < 50 && dist >= 30)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 2000);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 2000);
 			}else if (dist < 30 && dist >= 15)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 1500);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 1500);
 			}else if (dist < 15 && dist >= 5)
 			{
-				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 320, 0750);
+				r.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 370, 0750);
 			}
 		}
 	}
