@@ -1,0 +1,374 @@
+//BUMP SENSOR is on ANALOG 4
+
+import rxtxrobot.RXTXRobot;
+import rxtxrobot.ArduinoNano;;
+
+public class NavigationV5
+{
+	public static RXTXRobot Murph;
+	public static void main(String[] args)
+	{
+		Murph = new ArduinoNano();
+		Murph.setPort("COM3");
+		Murph.connect();
+		Murph.attachMotor(RXTXRobot.MOTOR1, 5);
+		Murph.attachMotor(RXTXRobot.MOTOR2, 6);
+		startingBox();
+		firstTurn();
+		topofHill();
+		downTheRamp();
+		theFarWall();
+		middleAreaTurn();
+		pongToBridgeFirstWall();
+		pongToBridgeSecondWall();
+		crossBridge();
+		toSandPit();
+		sandPitServo();
+		Murph.sleep(15000);
+		Murph.close();
+		Murph.sleep(120000);
+		System.out.println("Fuck this class");
+	}	
+	
+	public static void startingBox()
+	{
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 1900);
+		int dist = 200; 
+		while (dist < 30 || dist > 55)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 120)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 1000); // Run both motors forward indefinitely 
+			}else if (dist < 30)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -330, 1000);
+			}else if (dist < 120 && dist > 55)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 0750);
+			}
+				
+		}
+	}
+	
+	public static int getPing()
+	{
+		int PING_PIN = 11;
+		int dist1 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist2 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist3 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist = (dist1 + dist2 + dist3)/3;
+		System.out.println("Response: " + Murph.getPing(PING_PIN));
+		return dist;
+	}
+	
+	public static void firstTurn()
+	{
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 330, 1300);
+		int dist = getPing();
+		if (dist >= 125 && dist <= 185)
+		{
+			System.out.println("Robot sees the ramp, going towards the ramp now.");
+			Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 8250);
+			System.out.println("Robot sees the ramp, going towards the ramp now.");
+		}else if (dist >= 185)
+		{
+			System.out.println("Robot doesn't see the ramp, turning around now.");
+			Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 330, 0);
+			Murph.sleep(2400);
+			Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 8250);
+		}else if (dist <= 125)
+		{
+			System.out.println("The ramp is closer than anticipated.");
+			Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 9250);
+		}
+	}
+		
+	public static void topofHill()
+	{
+		System.out.println("You should now be at the top of the hill.");
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -330, 1000);
+		moveServoUp();
+		displayTempAndWind();
+		Murph.sleep(1300);
+		Murph.moveServo(RXTXRobot.SERVO3,179);
+	}
+	
+	public static int getThermistorReading()
+	{
+		int sum = 0;
+		int readingCount = 10;
+		{
+			for (int i = 0; i < readingCount; i++)
+			{
+				Murph.refreshAnalogPins();
+				int reading = Murph.getAnalogPin(0).getValue();
+				sum += reading;
+			}
+		}
+		return sum / readingCount;
+	}
+	
+	public static int getThermistorReading2()
+	{
+		int sum = 0;
+		int readingCount2 = 10;
+		{
+			for (int i = 0; i < readingCount2; i++)
+			{
+				Murph.refreshAnalogPins();
+				int reading = Murph.getAnalogPin(2).getValue();
+				sum += reading;
+			}
+		}
+		return sum / readingCount2;
+	}
+	
+	public static double getWindSpeed()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		return (13.12 - thermistorReading + 0.6215 * thermistorReading2) / (11.37 - 0.3695 * thermistorReading2);
+	}
+	
+	public static void displayTempAndWind()
+	{
+		int thermistorReading = getThermistorReading();
+		int thermistorReading2 = getThermistorReading2();
+		double windSpeed = getWindSpeed();
+		
+		System.out.println("The open probe reads the value: " + thermistorReading);
+		System.out.println("In volts: " + (thermistorReading * (5.0/1023.0)));
+		System.out.println("The closed probe reads the value: " + thermistorReading2);
+		System.out.println("In volts: " + (thermistorReading2 * (5.0/1023.0)));
+		System.out.printf("This value equates to: %s degrees Celsius.\n",((thermistorReading) - 733.1832)/-5.62876);
+		System.out.printf("The wind speed is %s kilometers per houMurph.",windSpeed);
+	}
+
+	public static void moveServoUp()
+	{
+		Murph.attachServo(RXTXRobot.SERVO3, 7); //Connect the servos to the Arduino
+		System.out.println("The first turn is now oveMurph. Now doing the second turn.");
+		Murph.moveServo(RXTXRobot.SERVO3,1);
+		System.out.println("The servo should currently be up.");
+		Murph.sleep(2000);
+	}
+	
+	public static void moveServoDown()
+	{
+		Murph.moveServo(RXTXRobot.SERVO3,179);
+		System.out.println("The second turn is oveMurph. Now doing the third turn.");
+		//Murph.moveServo(RXTXRobot.SERVO3,90);
+		Murph.sleep(2000);
+		System.out.println("This should bring the servos back to the default position.");
+	}
+	
+	public static void downTheRamp()
+	{
+		System.out.println("Now we are going to go down the ramp.");
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 3300);
+		System.out.println("You should now be at the bottom of the ramp.");
+	}
+	
+	public static void theFarWall()
+	{
+		int dist = 200;
+		int totalTime = 0;
+		while (dist < 18 || dist >= 35)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 35)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 600);
+				totalTime += 0250;
+			}else if (dist < 18)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -330, 600);
+				totalTime += -250;
+			}/*else if (dist >= 18 && dist < 35)
+			{
+				avoidObstacles(totalTime);
+			}
+			*/
+		}
+	System.out.println("The robot is the appropriate distance from the middle area wall.");
+	}
+	
+	public static void avoidObstacles(int totalTime)
+	{
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 330, 1200);
+		Murph.sleep(300);
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 2000);
+		Murph.sleep(300);
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -330, 1200);
+		Murph.sleep(300);
+		int dist = 100;
+		while (dist > 35)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 40)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 750);
+			}else if (dist >= 30 && dist < 40)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 400);
+			}else if (dist >= 15 && dist < 30)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 250);
+			}
+		}
+		Murph.sleep(300);
+	}
+	
+	public static void middleAreaTurn()
+	{
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 330, 1200);
+		System.out.println("The robot should now be facing the ping pong ball dispenser");
+		int dist = 30;
+		while (dist >= 11)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 70 && dist < 100)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 2500);
+			}else if (dist >= 100)
+			{
+				System.out.println("The wall is far from the robot. ");
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 3300);
+			}else if (dist < 70 && dist >= 40)
+			{
+				System.out.println("The wall is somewhat close to the robot.");
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 1500);
+			}else if (dist < 40 && dist >= 11)
+			{
+				System.out.println("The wall is very close to the robot.");
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 750);
+			}else if (dist < 5)
+			{
+				System.out.println("The robot should be hitting the wall");
+			}
+		}
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -330, 500);
+		Murph.sleep(4000);
+		System.out.println("You should now have the ping pong ball.");
+	}
+	
+	public static void pongToBridgeFirstWall()
+	{
+		System.out.println("This is the pongToBridgeFirstWall method (for debugging)");
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, -330, 600);
+		Murph.runMotor(RXTXRobot.MOTOR1, 300, RXTXRobot.MOTOR2, 330, 1200);
+		int dist = 300;
+		while (dist >= 20)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 70)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 2000);
+			}else if (dist < 70 && dist >= 40)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 1000);
+			}else if (dist < 40 && dist >= 20)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 750);
+			}
+		}	
+	}
+	
+	public static void pongToBridgeSecondWall()
+	{
+		System.out.println("This is the pongToBridgeSecondWall method (for debugging)");
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -330, 1200);
+		int dist = 300;
+		while (dist < 10 || dist > 15)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 60)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -330, RXTXRobot.MOTOR2, 300, 1000);
+			}else if (dist < 60 && dist >= 15)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -330, RXTXRobot.MOTOR2, 300, 0500);
+			}else if (dist < 10)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, 330, RXTXRobot.MOTOR2, -300, 0500);
+			}
+		}
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -330, 1200);
+	}
+	
+	public static void crossBridge()
+	{
+		System.out.println("This is the crossBridge method");
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 7000);
+	}
+	
+	public static void toSandPit()
+	{
+		System.out.println("This is the toSandPit method");
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 2000);
+		Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, -330, 4000);
+		int dist = 200;
+		while (dist > 5)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist >= 50)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 3000);
+			}else if (dist < 50 && dist >= 30)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 2000);
+			}else if (dist < 30 && dist >= 15)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 1500);
+			}else if (dist < 15 && dist >= 5)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -300, RXTXRobot.MOTOR2, 330, 0750);
+			}
+		}
+	}
+	
+	public static void sandPitServo()
+	{
+		Murph.attachServo(RXTXRobot.SERVO2, 8);
+		Murph.moveServo(RXTXRobot.SERVO2, 1);
+		int Vtotal = conductivity();
+		if (Vtotal >= 20)
+		{
+			pingPongServo();
+		}
+	}
+
+	public static int conductivity()
+	{
+		Murph.refreshAnalogPins(); // Cache the Analog pin information
+		int tempTotal = 0;
+		int x = 0;
+		for (x=0; x < 3; ++x) 
+		{
+			int temp = Murph.getConductivity();
+			System.out.println("Sensor " + x + " has value: " + temp); 
+			tempTotal += temp;
+		} 
+		int Vtotal = tempTotal / x;
+		System.out.println("Average Voltage: " + Vtotal);
+		System.out.println("This equates to 0.0035% conductivity.");
+		return Vtotal;
+    } 
+	
+	public static void pingPongServo()
+	{
+		Murph.attachServo(RXTXRobot.SERVO1, 9);
+		Murph.moveServo(RXTXRobot.SERVO1, 1);
+	}
+}
