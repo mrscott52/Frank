@@ -1,0 +1,55 @@
+import rxtxrobot.*;
+
+public class pingRotatingServo 
+{
+	final private static int PING_PIN = 11;
+	public static RXTXRobot Murph;
+	public static void main(String[] args)
+	{
+		int dist1 = 0;
+		int dist2 = 0;
+		int dist3 = 0;
+		Murph = new ArduinoNano();
+		Murph.setPort("COM3");
+		Murph.connect();
+		Murph.attachServo(RXTXRobot.SERVO1, 10);
+		
+		Murph.moveServo(RXTXRobot.SERVO1, 179);
+		Murph.sleep(500);
+		for (int x = 0; x < 3; ++x)
+		{
+			//Read the ping sensor value, which is connected to pin 11
+			System.out.println("Response for Angle 1: " + Murph.getPing(PING_PIN) + " cm");
+			dist1 += Murph.getPing(PING_PIN);
+			Murph.sleep(300);
+		}
+		dist1 = dist1 / 3;
+		
+		Murph.moveServo(RXTXRobot.SERVO1, 90);
+		Murph.sleep(500);
+		for (int x = 0; x < 3; ++x)
+		{
+			//Read the ping sensor value, which is connected to pin 11
+			System.out.println("Response for Angle 2: " + Murph.getPing(PING_PIN) + " cm");
+			dist2 += Murph.getPing(PING_PIN);
+			Murph.sleep(300);
+		}
+		dist2 = dist2 / 3;
+		
+		Murph.moveServo(RXTXRobot.SERVO1, 1);
+		Murph.sleep(500);
+		for (int x = 0; x < 3; ++x)
+		{
+			//Read the ping sensor value, which is connected to pin 11
+			System.out.println("Response for Angle 3: " + Murph.getPing(PING_PIN) + " cm");
+			dist3 += Murph.getPing(PING_PIN);
+			Murph.sleep(300);
+		}
+		dist3 = dist3 / 3;
+		
+		System.out.println("Distance 1: " + dist1 + " cm.");
+		System.out.println("Distance 2: " + dist2 + " cm.");
+		System.out.println("Distance 3: " + dist3 + " cm.");
+		Murph.close();
+	}
+}
