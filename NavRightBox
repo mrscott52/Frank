@@ -18,7 +18,7 @@ public class NavRightBox
 		Murph.attachServo(RXTXRobot.SERVO1, 10);
 		startingBox();
 		firstTurn();
-		//topOfHill();
+		topOfHill();
 		downTheRamp();
 		avoidObstacle2();
 		toPingPongBall();
@@ -34,7 +34,7 @@ public class NavRightBox
 		int dist = 0;
 		Murph.moveServo(RXTXRobot.SERVO1, 125);
 		Murph.sleep(500);
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < 2; ++x)
 		{
 			System.out.println("Response for right distance: " + Murph.getPing(PING_PIN) + " cm.");
 			dist += Murph.getPing(PING_PIN);
@@ -48,7 +48,7 @@ public class NavRightBox
 	{
 		int dist = 0;
 		Murph.moveServo(RXTXRobot.SERVO1, 90);
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < 2; ++x)
 		{
 			System.out.println("Response for center distance: " + Murph.getPing(PING_PIN) + " cm.");
 			dist += Murph.getPing(PING_PIN);
@@ -63,7 +63,7 @@ public class NavRightBox
 		int dist = 0;
 		Murph.moveServo(RXTXRobot.SERVO1, 55);
 		Murph.sleep(500);
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < 2; ++x)
 		{
 			System.out.println("Response for left distance: " + Murph.getPing(PING_PIN) + " cm");
 			dist += Murph.getPing(PING_PIN);
@@ -79,7 +79,7 @@ public class NavRightBox
 		int dist = 0;
 		Murph.moveServo(RXTXRobot.SERVO1, 179);
 		Murph.sleep(500);
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < 2; ++x)
 		{
 			System.out.println("Response for far left distance: " + Murph.getPing(PING_PIN) + " cm");
 			dist += Murph.getPing(PING_PIN);
@@ -95,7 +95,7 @@ public class NavRightBox
 		int dist = 0;
 		Murph.moveServo(RXTXRobot.SERVO1, 179);
 		Murph.sleep(500);
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < 2; ++x)
 		{
 			System.out.println("Response for far right distance: " + Murph.getPing(PING_PIN) + " cm");
 			dist += Murph.getPing(PING_PIN);
@@ -129,7 +129,7 @@ public class NavRightBox
 	
 	public static void firstTurn()
 	{
-		Murph.runMotor(RXTXRobot.MOTOR1, 280, RXTXRobot.MOTOR2, 340, 1200); //Turn Left
+		Murph.runMotor(RXTXRobot.MOTOR1, 280, RXTXRobot.MOTOR2, 340, 1100); //Turn Left
 		System.out.println("You should now be facing the	int dist = getPingCenter(); hill.");
 		Murph.sleep(500);
 		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 5100); //Move forward towards the hill
@@ -140,10 +140,10 @@ public class NavRightBox
 			dist = getPingCenter();
 			if (dist > 45)
 			{
-				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 3000);
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 2500);
 				System.out.println("You should now be on top of the hill.");
 				Murph.sleep(750);
-				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1000);	//Turn Right
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1100);	//Turn Right
 				System.out.println("You should now be facing the second area.");
 			}else
 			{
@@ -157,7 +157,7 @@ public class NavRightBox
 		moveBoom();
 		System.out.println("You should now have the boom up.");
 		displayTempAndWind();
-		Murph.runMotor(RXTXRobot.MOTOR3, -280, 1000);
+		Murph.runMotor(RXTXRobot.MOTOR3, 280, 1300);
 		System.out.println("You should now have the boom down");
 	}
 	
@@ -216,7 +216,7 @@ public class NavRightBox
 	public static void moveBoom()
 	{
 		Murph.attachMotor(RXTXRobot.MOTOR3, 7); //Connect the servos to the Arduino
-		Murph.runMotor(RXTXRobot.MOTOR3, 280, 2800);
+		Murph.runMotor(RXTXRobot.MOTOR3, -200, 1300);
 		System.out.println("The servo should currently be up.");
 	}
 	
@@ -243,9 +243,9 @@ public class NavRightBox
 				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 2500);
 			}else
 			{
-				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 600);
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 1000);
 			}
-		}while (centerDist > 30 && leftDist > 30 && rightDist > 30);
+		}while (centerDist >= 30 && leftDist >= 30 && rightDist >= 30);
 	}
 	
 	public static void toPingPongBallWall()
@@ -253,7 +253,7 @@ public class NavRightBox
 		int rightDist = 10000;
 		Murph.refreshDigitalPins();
 		rightDist = getPingFarRight();
-		if (rightDist >= 30)
+		if (rightDist >= 35)
 		{
 			obstacleExists();
 		}else
@@ -278,13 +278,12 @@ public class NavRightBox
 				Murph.runMotor(RXTXRobot.MOTOR1, 280, RXTXRobot.MOTOR2, -340, 250);
 			}
 		}while (centerDist > 30 || centerDist < 15);
-		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1000);
+		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1200);
 		toPingPongBall();
 	}
 	
 	public static void toPingPongBall()
 	{
-		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1200);
 		int distCenter = 100;
 		do
 		{
@@ -312,7 +311,7 @@ public class NavRightBox
 	
 	public static void toBridgePart1()
 	{
-		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1000);
+		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1200);
 		int dist = 10000;
 		do
 		{
