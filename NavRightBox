@@ -114,17 +114,17 @@ public class NavRightBox
 		{
 			Murph.refreshDigitalPins();
 			dist = getPingCenter();
-		if (dist < 40 && dist > 25)//if the robot is between 15 and 25 cm from the first wall, it should perform it first turn
+		if (dist < 40 && dist > 20)//if the robot is between 15 and 25 cm from the first wall, it should perform it first turn
 		{
 			System.out.println("You should now be out of the box.");
-		}else if (dist < 25)
+		}else if (dist < 20)
 		{
 			Murph.runMotor(RXTXRobot.MOTOR1, 280, RXTXRobot.MOTOR2, -340, 1000); //Back up because you are too close to the wall
 		}else if (dist > 40)
 		{
 			Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 600); //Move forward because you are too far away
 		}
-		}while (dist > 40 || dist < 25);
+		}while (dist > 40 || dist < 20);
 	}
 	
 	public static void firstTurn()
@@ -239,7 +239,7 @@ public class NavRightBox
 			rightDist = getPingRight();
 			if (centerDist < 30 || rightDist < 30 || leftDist < 30)
 			{
-				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1200);
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, -340, 1150);
 				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 340, 2500);
 			}else
 			{
