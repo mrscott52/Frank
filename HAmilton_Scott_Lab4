@@ -1,0 +1,152 @@
+;Madeline Hamilton and Megan Scott worked on this together.
+;Morse code is a language of short and long dashes used to communicated when you can't verbally communicate with someone
+;it is often used by naval ships when they were in a foggy environment and wanted to convey that they needed help to other ships
+;this program communicates the letters "SOS" in Morse code, which means "help" 
+RCC_APB2ENR EQU 0X40021018 
+GPIOE_CRH EQU 0X40011804 
+GPIOE_BSRR EQU 0X40011810 
+short_delay EQU 0x100000
+long_delay EQU 0x200000
+
+	AREA Lab3, CODE, READONLY
+		ENTRY 
+		LDR R0, =RCC_APB2ENR 
+		LDR R1, =GPIOE_CRH 
+		LDR R2, =GPIOE_BSRR 
+		LDR R3, =0X40 
+		STR R3, [R0] 
+		LDR R3, =0X33333333 
+		STR R3, [R1] 
+		LDR R4, =short_delay
+main_loop
+		MOV r8, #3 ;counter for the three short blinks
+		;TURN_ON to turn 4 of the lights on at once
+TURN_ON
+		MOV r5, #0x400 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LDR r4, =short_delay
+		;delay_short is the short delay between turning the four lights on and turning them off
+delay_short
+		SUB r4, r4, #1 
+		CMP r4, #0 
+		BNE delay_short
+		;turn_off for turning the four lights off
+turn_off
+		MOV r5, #0x4000000 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		LDR r4, =short_delay
+		;short delay before turning them on again
+delay_short2
+		SUB r4, r4, #1
+		CMP r4, #0
+		BNE delay_short2
+		SUB r8, r8, #1 
+		CMP r8, #0 
+		BNE TURN_ON	;it'll branch back to TURN_OFF three times
+		;short short short, or "S", now finished
+		;now, turn on all the lights for a longer time
+		MOV r8, #3
+turn_long
+		MOV r5, #0x100
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LDR r4, =long_delay
+		;now the longer delay between turning them on and off
+longer_Delay
+		SUB r4, r4, #1 
+		CMP r4, #0 
+		BNE longer_Delay
+		;now to turn off all the lights
+TURN_OFF
+		MOV r5, #0x1000000
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LSL r5, #1
+		STR r5, [r2]
+		LDR r4, =long_delay
+		;now for a longer delay before turning them on again
+longer_Delay2
+		SUB r4, r4, #1 
+		CMP r4, #0 
+		BNE longer_Delay2
+		SUB r8, r8, #1 
+		CMP r8, #0 
+		BNE turn_long	;it will branch back 3 times
+		;long long long, or "O", is done
+		;now do "short short short" again 
+		MOV r8, #3	;counter
+TURN_ON2
+		MOV r5, #0x400 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LDR r4, =short_delay
+		;delay_short is the short delay between turning the four lights on and turning them off
+delay_short3
+		SUB r4, r4, #1 
+		CMP r4, #0 
+		BNE delay_short3
+		;turn_off for turning the four lights off
+turn_off2
+		MOV r5, #0x4000000 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		STR r5, [r2] 
+		LSL r5, #1 
+		LDR r4, =short_delay
+		;short delay before turning them on again
+delay_short4
+		SUB r4, r4, #1
+		CMP r4, #0
+		BNE delay_short4
+		SUB r8, r8, #1 
+		CMP r8, #0 
+		BNE TURN_ON2	;it'll branch back to TURN_OFF three times
+		;now branch back to the top of the main loop to repeat the whole process again
+		B	main_loop
+		END
