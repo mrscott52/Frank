@@ -1,0 +1,99 @@
+import rxtxrobot.*;
+public class Conductivity
+{
+	public static RXTXRobot Murph;
+	public static void main(String[] args)
+	{
+		Murph = new ArduinoNano();
+		Murph.setPort("COM3");
+		Murph.connect();
+		Murph.attachMotor(RXTXRobot.MOTOR1, 5);
+		Murph.attachMotor(RXTXRobot.MOTOR2, 6);
+		Murph.attachServo(RXTXRobot.SERVO2, 8);
+		//afterBridgeMovement();
+		sandPitServo();
+		//conductivity();
+		Murph.close();
+	}
+	
+	public static int getPing()
+	{
+		int PING_PIN = 11;
+		int dist1 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist2 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist3 = Murph.getPing(PING_PIN);
+		Murph.refreshDigitalPins();
+		int dist = (dist1 + dist2 + dist3)/3;
+		System.out.println("Response: " + Murph.getPing(PING_PIN));
+		return dist;
+	}
+	
+	public static void afterBridgeMovement()
+	{
+		Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 320, 2800);
+		int dist = 1000;
+		while (dist > 5)
+		{
+			Murph.refreshDigitalPins();
+			dist = getPing();
+			if (dist > 40)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 320, 1500);
+			}else if (dist <= 40 && dist > 25)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 320, 1500);
+			}else if (dist <= 25 && dist > 15)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 320, 550);
+			}else if (dist <= 15 && dist > 5)
+			{
+				Murph.runMotor(RXTXRobot.MOTOR1, -280, RXTXRobot.MOTOR2, 320, 280);
+			}
+		}
+	}
+	
+	public static void sandPitServo()
+	{
+		Murph.moveServo(RXTXRobot.SERVO2, 179);
+		int vTotal = conductivity();
+		System.out.println("The ADC code is: " + vTotal);
+		int vResistance = (vTotal * 2000) / (vTotal - 1);
+		System.out.println("The resistance is: " + vResistance);
+		double vConductance = (100000 / (vResistance * 4.704));
+		System.out.println("The conductance is: " + vConductance);
+		if (vConductance > 2)
+		{
+			Murph.moveServo(RXTXRobot.SERVO2, 1);
+			pingPongServo();
+		}else
+		{
+			Murph.moveServo(RXTXRobot.SERVO2, 1);
+			//Murph.runMotor(RXTXRobot.MOTOR1, 280, RXTXRobot.MOTOR2, -320, 1000);
+			System.out.println("The soil does not have a high enough water percentage.");
+		}
+	}
+	public static int conductivity()
+	{
+		Murph.refreshAnalogPins(); // Cache the Analog pin information
+		int condTotal = 0;
+		int x = 0;
+		for (x = 0; x < 2; ++x) 
+		{
+			int cond = Murph.getConductivity();
+			System.out.println("Sensor " + x + " has value: " + cond); 
+			condTotal += cond;
+		} 
+		int Vtotal = condTotal / 2;
+		System.out.println("Average Voltage: " + Vtotal);
+		return Vtotal;
+    } 
+	
+	
+	
+	public static void pingPongServo()
+	{
+		Murph.moveServo(RXTXRobot.SERVO2, 1);
+	}
+}

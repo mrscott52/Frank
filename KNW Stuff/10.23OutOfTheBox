@@ -1,0 +1,65 @@
+import rxtxrobot.ArduinoUno;
+import rxtxrobot.RXTXRobot;
+
+public class OutOfTheBox
+{
+	final private static int PING_PIN = 13;
+	public static RXTXRobot r = new ArduinoUno();
+	//Leave the starting box - Go forward until it reads 35-50 cm
+	//Turn one direction - Either left or right - without moving forward
+	//Measure distance once turned - Go direction that gets a response (if no response, turn around and go that way)
+	public static int getPing()
+	{
+		//RXTXRobot r = new ArduinoUno(); // Create RXTXRobot object
+		{
+			r.setPort("COM3"); // Set the port to COM3
+			r.connect();
+			int distance = 10000000;
+			while(distance > 50)
+			{
+				//Read the ping sensor value, which is connected to pin 11
+				int measurement = r.getPing(PING_PIN);
+				System.out.println("Response: " + measurement + " cm");
+				distance = measurement;
+				r.sleep(300);
+			}
+			r.close();
+			return distance;
+		}
+	}
+	public static void moveForward()
+	{
+		RXTXRobot r = new ArduinoUno(); // Create RXTXRobot object
+		r.attachMotor(RXTXRobot.MOTOR1, 5);
+		r.attachMotor(RXTXRobot.MOTOR2, 6);
+		int distance = getPing();
+		do
+		{
+			r.runMotor(RXTXRobot.MOTOR1, 330, RXTXRobot.MOTOR2, -350, 0); // Run both motors forward indefinitely 
+		}while(distance >= 50);
+		{
+			r.runMotor(RXTXRobot.MOTOR1, 0, RXTXRobot.MOTOR2, 0, 0); //Stop both motors
+		}
+	}
+	//Turn & stop
+	public static void turnLeft()
+	{
+		RXTXRobot r = new ArduinoUno();
+		r.attachMotor(RXTXRobot.MOTOR1, 5);
+		r.attachMotor(RXTXRobot.MOTOR2, 6);
+		r.runMotor(RXTXRobot.MOTOR1, 250, RXTXRobot.MOTOR2, 250, 0);
+		r.sleep(4000);
+		r.runMotor(RXTXRobot.MOTOR1, 0, RXTXRobot.MOTOR2, 0, 0);
+	}
+	//Measure ping distance after turn
+	public static void main(String[] args)
+	{
+		moveForward();
+		turnLeft();
+		int distance = getPing();
+		if(distance >=100 || distance <= 180)
+		{
+			r.runMotor(RXTXRobot.MOTOR1, 330, RXTXRobot.MOTOR2, -350, 0); // Run both motors forward indefinitely 
+		}
+	}
+}
